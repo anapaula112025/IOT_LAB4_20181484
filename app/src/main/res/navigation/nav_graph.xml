@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragmentLigas">
+
+    <fragment
+        android:id="@+id/fragmentLigas"
+        android:name="com.example.telefutbol.Fragmentos.FragmentLigas"
+        android:label="fragment_ligas"
+        tools:layout="@layout/fragment_ligas"/>
+    <fragment
+        android:id="@+id/fragmentPosiciones"
+        android:name="com.example.telefutbol.Fragmentos.FragmentPosiciones"
+        android:label="fragment_posiciones"
+        tools:layout="@layout/fragment_posiciones"/>
+    <fragment
+        android:id="@+id/fragmentResultados"
+        android:name="com.example.telefutbol.Fragmentos.FragmentResultados"
+        android:label="fragment_resultados"
+        tools:layout="@layout/fragment_resultados"/>
+</navigation>
