@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.example.telefutbol.ResultadosAdapter;
 import com.example.telefutbol.Service.FutbolService;
 import com.example.telefutbol.databinding.FragmentResultadosBinding;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +110,7 @@ public class FragmentResultados extends Fragment implements SensorEventListener 
         futbolService.getResultados(idLiga,ronda,temporada).enqueue(new Callback<ResultadosDto>() {
             @Override
             public void onResponse(Call<ResultadosDto> call, Response<ResultadosDto> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful()&& response.body() != null) {
                     List<Resultados> nuevosResultados = response.body().getListaResultados();
                     if (nuevosResultados != null && !nuevosResultados.isEmpty()) {
                         // Añadir los nuevos resultados al historial de listas
@@ -125,17 +127,32 @@ public class FragmentResultados extends Fragment implements SensorEventListener 
                             // Notificamos al adaptador que los datos han cambiado
                             adapter.notifyDataSetChanged();
                         }
+                    }else {
+                        Toast.makeText(getActivity(), "No se encontraron resultados para la liga, ronda o temporada especificada", Toast.LENGTH_SHORT).show();}
+
+
+                }else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.d("API_ERROR", "Respuesta de error: " + errorBody); // Log para mostrar el cuerpo de error
+                        if (errorBody.contains("Invalid League ID passed")) {
+                            Toast.makeText(getActivity(), "Liga no encontrada", Toast.LENGTH_SHORT).show();
+                        } else if (errorBody.contains("No round found")) {
+                            Toast.makeText(getActivity(), "Ronda no encontrada", Toast.LENGTH_SHORT).show();
+                        }else {
+                            Toast.makeText(getActivity(), "Error en la respuesta", Toast.LENGTH_SHORT).show();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Error al procesar la respuesta", Toast.LENGTH_SHORT).show();
                     }
-
-
-                } else {
-                    Toast.makeText(getActivity(), "Error en la respuesta", Toast.LENGTH_SHORT).show();
                 }
+
             }
 
             @Override
             public void onFailure(Call<ResultadosDto> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error de conexión", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "No se encontraron resultados para la liga, ronda o temporada especificada", Toast.LENGTH_SHORT).show();
             }
         });
     }

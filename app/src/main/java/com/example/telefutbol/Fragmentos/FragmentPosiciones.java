@@ -87,45 +87,27 @@ public class FragmentPosiciones extends Fragment {
             public void onResponse(Call<PosicionesDto> call, Response<PosicionesDto> response) {
 
                 if (response.isSuccessful()) {
-                    PosicionesDto posicionesDto = response.body();
-                    if (posicionesDto != null) {
-                        List<Posiciones> posiciones = posicionesDto.getListaPosiciones();
+                    List<Posiciones> posiciones = response.body().getListaPosiciones();
                     if (posiciones != null && !posiciones.isEmpty()) {
-                        boolean idFound = false;
-                        boolean temporadaFound = false;
-
-                        for (Posiciones posicion : posiciones) {
-                            if (posicion.getIdLiga().equals(idLiga)) {
-                                idFound = true;
-                            }
-                            if (posicion.getTemporada().equals(temporada)) {
-                                temporadaFound = true;
-                            }
-                        }
-                        if (!idFound) {
-                            Toast.makeText(getActivity(), "No se encontraron posiciones para la idLiga proporcionada", Toast.LENGTH_SHORT).show();
-                        }else if (!temporadaFound) {
-                            Toast.makeText(getActivity(), "No se encontraron posiciones para la temporada proporcionada", Toast.LENGTH_SHORT).show();
-                        }else {
-                            adapter = new PosicionesAdapter(posiciones);
-                            binding.recyclerViewListaPosiciones.setAdapter(adapter);
-                        }
-                    }else {
-                        Toast.makeText(getActivity(), "No se encontraron posiciones para los criterios de búsqueda proporcionados", Toast.LENGTH_SHORT).show();
-                    }
+                        adapter = new PosicionesAdapter(posiciones);
+                        binding.recyclerViewListaPosiciones.setAdapter(adapter);
                     } else {
-                        Toast.makeText(getActivity(), "Error en la respuesta del servidor", Toast.LENGTH_SHORT).show();
+
+                        Toast.makeText(getActivity(), "No se encontraron posiciones para el idLiga o temporada especificados", Toast.LENGTH_SHORT).show();
                     }
-
-
                 } else {
-                    Toast.makeText(getActivity(), "Error en la respuesta", Toast.LENGTH_SHORT).show();
+
+                    if (response.code() == 404) {
+                        Toast.makeText(getActivity(), "No se encontró información para el idLiga o la temporada especificados", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), "Error en la respuesta", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<PosicionesDto> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error de conexión", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "No se encontraron posiciones para el idLiga o temporada especificados", Toast.LENGTH_SHORT).show();
             }
         });
     }
